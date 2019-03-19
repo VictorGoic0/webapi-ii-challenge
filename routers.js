@@ -20,7 +20,7 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const post = await db.findById(id);
-    if (post) {
+    if (Object.keys(post) > 0) {
       res.status(200).json(post);
     } else {
       res
@@ -85,7 +85,7 @@ router.put("/:id", async (req, res) => {
     try {
       const edit = await db.update(id, body);
       const newPost = await db.findById(id);
-      if (newPost) {
+      if (Object.keys(newPost) > 0) {
         res.status(200).json(newPost);
       } else {
         res
