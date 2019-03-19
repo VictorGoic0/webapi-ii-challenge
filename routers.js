@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
       res.status(201).json(findNewPost);
     } catch (error) {
       console.log(error);
-      res.send(500).json({
+      res.status(500).json({
         message: "There was an error while saving the post to the database"
       });
     }
@@ -95,7 +95,7 @@ router.put("/:id", async (req, res) => {
     } catch (error) {
       console.log(error);
       res
-        .send(500)
+        .status(500)
         .json({ message: "The post information could not be modified." });
     }
   }
