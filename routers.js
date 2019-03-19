@@ -49,6 +49,17 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {});
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { body } = req;
+  try {
+    const edit = await db.update(id, body);
+    const newPost = await db.findById(id);
+    res.status(202).json(newPost);
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ message: "error" });
+  }
+});
 
 module.exports = router;
