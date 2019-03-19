@@ -25,4 +25,30 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.post("/", async (req, res) => {
+  const post = req.body;
+  try {
+    const edit = await db.insert(post);
+    const newPost = await db.findById(edit.id);
+    res.status(200).json(newPost);
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ message: "error" });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const post = await db.findById(id);
+    const deleted = await db.remove(id);
+    res.status(201).json(post);
+  } catch (error) {
+    console.log(error);
+    res.send(500).json({ message: "error" });
+  }
+});
+
+router.put("/:id", async (req, res) => {});
+
 module.exports = router;
