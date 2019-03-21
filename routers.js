@@ -68,6 +68,10 @@ router.delete("/:id", async (req, res) => {
       } else {
         res.status(500).json({ error: "The post could not be removed" });
       }
+    } else {
+      res
+        .status(404)
+        .json({ message: "The post with the specified ID does not exist." });
     }
   } catch (error) {
     console.log(error);
@@ -97,6 +101,10 @@ router.put("/:id", async (req, res) => {
             message: "The post with the specified ID does not exist."
           });
         }
+      } else {
+        res
+          .status(500)
+          .json({ message: "The post information could not be modified." });
       }
     } catch (error) {
       console.log(error);
