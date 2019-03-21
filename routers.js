@@ -44,8 +44,10 @@ router.post("/", async (req, res) => {
   } else {
     try {
       const newPost = await db.insert(post);
-      const findNewPost = await db.findById(newPost.id);
-      res.status(201).json(findNewPost);
+      if (newPost) {
+        const [findNewPost] = await db.findById(newPost.id);
+        res.status(201).json(findNewPost);
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json({
@@ -60,7 +62,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const [post] = await db.findById(id);
     if (post) {
-      const [deletedPost] = await db.remove(id);
+      const deletedPost = await db.remove(id);
       if (deletedPost) {
         res.status(201).json(post);
       } else {
@@ -85,17 +87,15 @@ router.put("/:id", async (req, res) => {
       .json({ message: "Please provide title and contents for the post." });
   } else {
     try {
-      const [edit] = await db.update(id, body);
+      const edit = await db.update(id, body);
       if (edit) {
         const [newPost] = await db.findById(id);
         if (newPost) {
           res.status(200).json(newPost);
         } else {
-          res
-            .status(404)
-            .json({
-              message: "The post with the specified ID does not exist."
-            });
+          res.status(404).json({
+            message: "The post with the specified ID does not exist."
+          });
         }
       }
     } catch (error) {
