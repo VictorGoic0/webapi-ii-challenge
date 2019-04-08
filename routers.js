@@ -19,8 +19,8 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const post = await db.findById(id);
-    if (post[0]) {
+    const [post] = await db.findById(id);
+    if (post) {
       res.status(200).json(post);
     } else {
       res
@@ -44,8 +44,10 @@ router.post("/", async (req, res) => {
   } else {
     try {
       const newPost = await db.insert(post);
-      const findNewPost = await db.findById(newPost.id);
-      res.status(201).json(findNewPost);
+      if (newPost) {
+        const [findNewPost] = await db.findById(newPost.id);
+        res.status(201).json(findNewPost);
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json({
@@ -58,12 +60,18 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const post = await db.findById(id);
-    const deletedPost = await db.remove(id);
-    if (deletedPost) {
-      res.status(201).json(post);
+    const [post] = await db.findById(id);
+    if (post) {
+      const deletedPost = await db.remove(id);
+      if (deletedPost) {
+        res.status(201).json(post);
+      } else {
+        res.status(500).json({ error: "The post could not be removed" });
+      }
     } else {
-      res.status(500).json({ error: "The post could not be removed" });
+      res
+        .status(404)
+        .json({ message: "The post with the specified ID does not exist." });
     }
   } catch (error) {
     console.log(error);
@@ -84,13 +92,19 @@ router.put("/:id", async (req, res) => {
   } else {
     try {
       const edit = await db.update(id, body);
-      const newPost = await db.findById(id);
-      if (Object.keys(newPost).length > 0) {
-        res.status(200).json(newPost);
+      if (edit) {
+        const [newPost] = await db.findById(id);
+        if (newPost) {
+          res.status(200).json(newPost);
+        } else {
+          res.status(404).json({
+            message: "The post with the specified ID does not exist."
+          });
+        }
       } else {
         res
-          .status(404)
-          .json({ message: "The post with the specified ID does not exist." });
+          .status(500)
+          .json({ message: "The post information could not be modified." });
       }
     } catch (error) {
       console.log(error);
